@@ -12,6 +12,11 @@ async def init_db() -> None:
         database=db,
         document_models=[
             "app.models.user.User",
+            "app.models.company.Company",
+            "app.models.department.Department",
+            "app.models.position.Position",
+            "app.models.menu.Menu",
+            "app.models.role.Role",
         ],
     )
     logger.info(f"MongoDB connected: {settings.MONGODB_URL}/{settings.MONGODB_DATABASE}")
