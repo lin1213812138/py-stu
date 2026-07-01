@@ -1,4 +1,4 @@
-.PHONY: dev test lint typecheck shell
+.PHONY: dev test lint typecheck build shell
 
 PYTHON = .venv\Scripts\python
 
@@ -13,6 +13,9 @@ lint:
 
 typecheck:
 	$(PYTHON) -m mypy .
+
+build:
+	$(PYTHON) -m hatch build
 
 shell:
 	$(PYTHON)

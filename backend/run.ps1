@@ -1,6 +1,6 @@
 param(
     [Parameter(Position = 0)]
-    [ValidateSet("dev", "test", "lint", "typecheck", "shell")]
+    [ValidateSet("dev", "test", "lint", "typecheck", "build", "shell")]
     [string]$Command = "dev",
 
     [Parameter(ValueFromRemainingArguments = $true)]
@@ -25,6 +25,10 @@ switch ($Command) {
     "typecheck" {
         Write-Host "✅ Type checking..." -ForegroundColor Cyan
         & $PYTHON -m mypy . @ExtraArgs
+    }
+    "build" {
+        Write-Host "📦 Building wheel..." -ForegroundColor Cyan
+        & $PYTHON -m hatch build @ExtraArgs
     }
     "shell" {
         & $PYTHON @ExtraArgs
