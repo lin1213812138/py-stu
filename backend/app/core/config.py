@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from loguru import logger
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -23,6 +24,12 @@ class Settings(BaseSettings):
         env_file = f".env.{env}"
         if not Path(env_file).exists():
             env_file = ".env"
+            if not Path(env_file).exists():
+                logger.warning(
+                    "No .env.{} or .env file found, using defaults", env
+                )
+                super().__init__(**kwargs)
+                return
         super().__init__(_env_file=env_file, **kwargs)
 
 

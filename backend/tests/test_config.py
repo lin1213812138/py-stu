@@ -29,3 +29,12 @@ def test_env_override_from_system():
     os.environ["ENV"] = "production"
     s = Settings()
     assert s.ENV == "production"
+
+
+def test_env_file_is_loaded_when_exists(tmp_path, monkeypatch):
+    env_file = tmp_path / ".env.staging"
+    env_file.write_text("MONGODB_URL=mongodb://staging-mongo:27017\n")
+    monkeypatch.setenv("ENV", "staging")
+    monkeypatch.chdir(tmp_path)
+    s = Settings()
+    assert s.MONGODB_URL == "mongodb://staging-mongo:27017"
