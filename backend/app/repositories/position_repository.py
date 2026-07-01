@@ -22,7 +22,7 @@ class PositionRepository:
         pos = await Position.get(pos_id)
         if not pos:
             return None
-        update_data["updated_at"] = int(time.time() * 1000)
+        update_data["updated_at"] = time.time() * 1000
         await pos.update({"$set": update_data})
         return await Position.get(pos_id)
 

@@ -18,8 +18,8 @@ class Role(Document):
     permissions: list[RolePermission] = []
     status: int = 1
     remark: Optional[str] = None
-    created_at: int = Field(default_factory=lambda: int(time.time() * 1000))
-    updated_at: int = Field(default_factory=lambda: int(time.time() * 1000))
+    created_at: float = Field(default_factory=lambda: time.time() * 1000)
+    updated_at: float = Field(default_factory=lambda: time.time() * 1000)
 
     class Settings:
         name = "roles"

@@ -23,8 +23,8 @@ class Menu(Document):
     query: Optional[str] = None
     remark: Optional[str] = None
     status: int = 1
-    created_at: int = Field(default_factory=lambda: int(time.time() * 1000))
-    updated_at: int = Field(default_factory=lambda: int(time.time() * 1000))
+    created_at: float = Field(default_factory=lambda: time.time() * 1000)
+    updated_at: float = Field(default_factory=lambda: time.time() * 1000)
 
     class Settings:
         name = "menus"
