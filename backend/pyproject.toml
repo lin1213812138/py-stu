@@ -22,7 +22,22 @@ dev = [
     "pytest>=8.0",
     "pytest-asyncio>=0.24.0",
     "httpx>=0.27.0",
+    "ruff>=0.7.0",
+    "mypy>=1.13.0",
 ]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP", "ANN", "B", "SIM", "ARG"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+ignore_missing_imports = true
+warn_unused_ignores = true
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

@@ -1,0 +1,64 @@
+﻿diff --git a/backend/.env.development b/backend/.env.development
+new file mode 100644
+index 0000000..ac85ae8
+--- /dev/null
++++ b/backend/.env.development
+@@ -0,0 +1,13 @@
++APP_NAME=python-stu
++ENV=development
++
++MONGODB_URL=mongodb://localhost:27017
++MONGODB_DATABASE=app
++
++REDIS_URL=redis://localhost:6379
++
++JWT_SECRET=dev-secret-key-change-in-production
++JWT_ACCESS_EXPIRE=1800
++JWT_REFRESH_EXPIRE=604800
++
++CORS_ORIGINS=["*"]
+diff --git a/backend/.env.production b/backend/.env.production
+new file mode 100644
+index 0000000..0be07c9
+--- /dev/null
++++ b/backend/.env.production
+@@ -0,0 +1,9 @@
++APP_NAME=python-stu
++ENV=production
++MONGODB_URL=mongodb://prod-mongo:27017
++MONGODB_DATABASE=app
++REDIS_URL=redis://prod-redis:6379
++JWT_SECRET=prod-secret-key
++JWT_ACCESS_EXPIRE=1800
++JWT_REFRESH_EXPIRE=604800
++CORS_ORIGINS=["https://example.com"]
+diff --git a/backend/.env.staging b/backend/.env.staging
+new file mode 100644
+index 0000000..78d07f8
+--- /dev/null
++++ b/backend/.env.staging
+@@ -0,0 +1,9 @@
++APP_NAME=python-stu
++ENV=staging
++MONGODB_URL=mongodb://staging-mongo:27017
++MONGODB_DATABASE=app
++REDIS_URL=redis://staging-redis:6379
++JWT_SECRET=staging-secret-key
++JWT_ACCESS_EXPIRE=1800
++JWT_REFRESH_EXPIRE=604800
++CORS_ORIGINS=["https://staging.example.com"]
+diff --git a/backend/.env.test b/backend/.env.test
+new file mode 100644
+index 0000000..f991340
+--- /dev/null
++++ b/backend/.env.test
+@@ -0,0 +1,9 @@
++APP_NAME=python-stu
++ENV=test
++MONGODB_URL=mongodb://localhost:27017
++MONGODB_DATABASE=app_test
++REDIS_URL=redis://localhost:6379
++JWT_SECRET=test-secret-key
++JWT_ACCESS_EXPIRE=1800
++JWT_REFRESH_EXPIRE=604800
++CORS_ORIGINS=["*"]

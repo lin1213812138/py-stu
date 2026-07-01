@@ -1,0 +1,241 @@
+﻿diff --git a/backend/.dockerignore b/backend/.dockerignore
+new file mode 100644
+index 0000000..8d28e62
+--- /dev/null
++++ b/backend/.dockerignore
+@@ -0,0 +1,13 @@
++.venv/
++__pycache__/
++*.pyc
++.git/
++.gitignore
++logs/
++.env
++.env.*
++dist/
++*.egg-info/
++.idea/
++.pytest_cache/
++README.md
+diff --git a/backend/.env.development b/backend/.env.development
+new file mode 100644
+index 0000000..ac85ae8
+--- /dev/null
++++ b/backend/.env.development
+@@ -0,0 +1,13 @@
++APP_NAME=python-stu
++ENV=development
++
++MONGODB_URL=mongodb://localhost:27017
++MONGODB_DATABASE=app
++
++REDIS_URL=redis://localhost:6379
++
++JWT_SECRET=dev-secret-key-change-in-production
++JWT_ACCESS_EXPIRE=1800
++JWT_REFRESH_EXPIRE=604800
++
++CORS_ORIGINS=["*"]
+diff --git a/backend/.env.production b/backend/.env.production
+new file mode 100644
+index 0000000..0be07c9
+--- /dev/null
++++ b/backend/.env.production
+@@ -0,0 +1,9 @@
++APP_NAME=python-stu
++ENV=production
++MONGODB_URL=mongodb://prod-mongo:27017
++MONGODB_DATABASE=app
++REDIS_URL=redis://prod-redis:6379
++JWT_SECRET=prod-secret-key
++JWT_ACCESS_EXPIRE=1800
++JWT_REFRESH_EXPIRE=604800
++CORS_ORIGINS=["https://example.com"]
+diff --git a/backend/.env.staging b/backend/.env.staging
+new file mode 100644
+index 0000000..78d07f8
+--- /dev/null
++++ b/backend/.env.staging
+@@ -0,0 +1,9 @@
++APP_NAME=python-stu
++ENV=staging
++MONGODB_URL=mongodb://staging-mongo:27017
++MONGODB_DATABASE=app
++REDIS_URL=redis://staging-redis:6379
++JWT_SECRET=staging-secret-key
++JWT_ACCESS_EXPIRE=1800
++JWT_REFRESH_EXPIRE=604800
++CORS_ORIGINS=["https://staging.example.com"]
+diff --git a/backend/.env.test b/backend/.env.test
+new file mode 100644
+index 0000000..f991340
+--- /dev/null
++++ b/backend/.env.test
+@@ -0,0 +1,9 @@
++APP_NAME=python-stu
++ENV=test
++MONGODB_URL=mongodb://localhost:27017
++MONGODB_DATABASE=app_test
++REDIS_URL=redis://localhost:6379
++JWT_SECRET=test-secret-key
++JWT_ACCESS_EXPIRE=1800
++JWT_REFRESH_EXPIRE=604800
++CORS_ORIGINS=["*"]
+diff --git a/backend/Dockerfile b/backend/Dockerfile
+index 18078ae..f1e365d 100644
+--- a/backend/Dockerfile
++++ b/backend/Dockerfile
+@@ -1,12 +1,24 @@
+-FROM python:3.12-slim
++# Stage 1: Builder
++FROM python:3.12-slim AS builder
++WORKDIR /build
+ 
+-WORKDIR /app
++RUN pip install --no-cache-dir uv
+ 
+ COPY pyproject.toml .
+-RUN pip install uv && uv sync --no-dev
++RUN uv sync --no-dev --frozen
+ 
+ COPY . .
++RUN uv build --wheel --out-dir /dist
+ 
+-EXPOSE 8000
++# Stage 2: Runtime
++FROM python:3.12-slim
++WORKDIR /app
++
++COPY --from=builder /dist/*.whl /tmp/
++RUN pip install /tmp/*.whl --no-cache-dir && \
++    rm -f /tmp/*.whl && \
++    groupadd -r appuser && useradd -r -g appuser -u 1000 appuser
+ 
+-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
++USER appuser
++EXPOSE 8000
++CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+diff --git a/backend/app/core/config.py b/backend/app/core/config.py
+index 3b18e61..ab69895 100644
+--- a/backend/app/core/config.py
++++ b/backend/app/core/config.py
+@@ -1,22 +1,36 @@
+-from pydantic_settings import BaseSettings
++import os
++from pathlib import Path
++from loguru import logger
++from pydantic_settings import BaseSettings, SettingsConfigDict
+ 
+ 
+ class Settings(BaseSettings):
+-    APP_NAME: str = "python-stu"
+     ENV: str = "development"
+-
+-    MONGODB_URL: str = "mongodb://mongo:27017"
++    APP_NAME: str = "python-stu"
++    MONGODB_URL: str = "mongodb://localhost:27017"
+     MONGODB_DATABASE: str = "app"
+-
+-    REDIS_URL: str = "redis://redis:6379"
+-
++    REDIS_URL: str = "redis://localhost:6379"
+     JWT_SECRET: str = "change-this-in-production"
+     JWT_ACCESS_EXPIRE: int = 1800
+     JWT_REFRESH_EXPIRE: int = 604800
+-
+     CORS_ORIGINS: list[str] = ["*"]
+ 
+-    model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
++    model_config = SettingsConfigDict(
++        env_file_encoding="utf-8",
++    )
++
++    def __init__(self, **kwargs):
++        env = os.getenv("ENV", "development")
++        env_file = f".env.{env}"
++        if not Path(env_file).exists():
++            env_file = ".env"
++            if not Path(env_file).exists():
++                logger.warning(
++                    "No .env.{} or .env file found, using defaults", env
++                )
++                super().__init__(**kwargs)
++                return
++        super().__init__(_env_file=env_file, **kwargs)
+ 
+ 
+ settings = Settings()
+diff --git a/backend/docker-compose.yml b/backend/docker-compose.yml
+index 116a615..96b9179 100644
+--- a/backend/docker-compose.yml
++++ b/backend/docker-compose.yml
+@@ -11,20 +11,22 @@ services:
+     image: redis:7-alpine
+     ports:
+       - "6379:6379"
+     restart: unless-stopped
+ 
+   backend:
+     build: .
+     ports:
+       - "8000:8000"
+     env_file:
+-      - .env
++      - .env.${ENV:-development}
++    environment:
++      - ENV=${ENV:-development}
+     volumes:
+       - .:/app
+     depends_on:
+       - mongodb
+       - redis
+     restart: unless-stopped
+ 
+ volumes:
+   mongo_data:
+diff --git a/backend/tests/test_config.py b/backend/tests/test_config.py
+new file mode 100644
+index 0000000..6309fd2
+--- /dev/null
++++ b/backend/tests/test_config.py
+@@ -0,0 +1,40 @@
++import os
++import pytest
++from app.core.config import Settings
++
++
++@pytest.fixture(autouse=True)
++def cleanup_env():
++    old = os.environ.get("ENV")
++    yield
++    if old is None:
++        os.environ.pop("ENV", None)
++    else:
++        os.environ["ENV"] = old
++
++
++def test_settings_instantiation():
++    s = Settings()
++    assert isinstance(s, Settings)
++    assert s.APP_NAME == "python-stu"
++
++
++def test_env_fallback_to_development():
++    os.environ.pop("ENV", None)
++    s = Settings()
++    assert s.ENV == "development"
++
++
++def test_env_override_from_system():
++    os.environ["ENV"] = "production"
++    s = Settings()
++    assert s.ENV == "production"
++
++
++def test_env_file_is_loaded_when_exists(tmp_path, monkeypatch):
++    env_file = tmp_path / ".env.staging"
++    env_file.write_text("MONGODB_URL=mongodb://staging-mongo:27017\n")
++    monkeypatch.setenv("ENV", "staging")
++    monkeypatch.chdir(tmp_path)
++    s = Settings()
++    assert s.MONGODB_URL == "mongodb://staging-mongo:27017"

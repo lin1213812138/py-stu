@@ -6,7 +6,7 @@ from app.schemas.menu import MenuCreate, MenuResponse, MenuUpdate
 
 class MenuService:
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.repo = MenuRepository()
 
     def _build_tree(self, menus: list[Menu]) -> list[dict]:

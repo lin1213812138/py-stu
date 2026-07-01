@@ -1,0 +1,32 @@
+param(
+    [Parameter(Position = 0)]
+    [ValidateSet("dev", "test", "lint", "typecheck", "shell")]
+    [string]$Command = "dev",
+
+    [Parameter(ValueFromRemainingArguments = $true)]
+    [string[]]$ExtraArgs
+)
+
+$PYTHON = ".venv\Scripts\python"
+
+switch ($Command) {
+    "dev" {
+        Write-Host "🚀 Starting dev server..." -ForegroundColor Cyan
+        & $PYTHON -m uvicorn app.main:app --reload @ExtraArgs
+    }
+    "test" {
+        Write-Host "🧪 Running tests..." -ForegroundColor Cyan
+        & $PYTHON -m pytest @ExtraArgs
+    }
+    "lint" {
+        Write-Host "🔍 Linting..." -ForegroundColor Cyan
+        & $PYTHON -m ruff check . @ExtraArgs
+    }
+    "typecheck" {
+        Write-Host "✅ Type checking..." -ForegroundColor Cyan
+        & $PYTHON -m mypy . @ExtraArgs
+    }
+    "shell" {
+        & $PYTHON @ExtraArgs
+    }
+}

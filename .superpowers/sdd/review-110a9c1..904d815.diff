@@ -1,0 +1,80 @@
+﻿diff --git a/backend/app/core/config.py b/backend/app/core/config.py
+index 3b18e61..deac4fe 100644
+--- a/backend/app/core/config.py
++++ b/backend/app/core/config.py
+@@ -1,22 +1,29 @@
+-from pydantic_settings import BaseSettings
++import os
++from pathlib import Path
++from pydantic_settings import BaseSettings, SettingsConfigDict
+ 
+ 
+ class Settings(BaseSettings):
+-    APP_NAME: str = "python-stu"
+     ENV: str = "development"
+-
+-    MONGODB_URL: str = "mongodb://mongo:27017"
++    APP_NAME: str = "python-stu"
++    MONGODB_URL: str = "mongodb://localhost:27017"
+     MONGODB_DATABASE: str = "app"
+-
+-    REDIS_URL: str = "redis://redis:6379"
+-
++    REDIS_URL: str = "redis://localhost:6379"
+     JWT_SECRET: str = "change-this-in-production"
+     JWT_ACCESS_EXPIRE: int = 1800
+     JWT_REFRESH_EXPIRE: int = 604800
+-
+     CORS_ORIGINS: list[str] = ["*"]
+ 
+-    model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
++    model_config = SettingsConfigDict(
++        env_file_encoding="utf-8",
++    )
++
++    def __init__(self, **kwargs):
++        env = os.getenv("ENV", "development")
++        env_file = f".env.{env}"
++        if not Path(env_file).exists():
++            env_file = ".env"
++        super().__init__(_env_file=env_file, **kwargs)
+ 
+ 
+ settings = Settings()
+diff --git a/backend/tests/test_config.py b/backend/tests/test_config.py
+new file mode 100644
+index 0000000..a9e84f9
+--- /dev/null
++++ b/backend/tests/test_config.py
+@@ -0,0 +1,31 @@
++import os
++import pytest
++from app.core.config import Settings
++
++
++@pytest.fixture(autouse=True)
++def cleanup_env():
++    old = os.environ.get("ENV")
++    yield
++    if old is None:
++        os.environ.pop("ENV", None)
++    else:
++        os.environ["ENV"] = old
++
++
++def test_settings_instantiation():
++    s = Settings()
++    assert isinstance(s, Settings)
++    assert s.APP_NAME == "python-stu"
++
++
++def test_env_fallback_to_development():
++    os.environ.pop("ENV", None)
++    s = Settings()
++    assert s.ENV == "development"
++
++
++def test_env_override_from_system():
++    os.environ["ENV"] = "production"
++    s = Settings()
++    assert s.ENV == "production"
