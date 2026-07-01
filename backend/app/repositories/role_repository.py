@@ -1,4 +1,4 @@
-from datetime import datetime
+import time
 from typing import Optional
 from app.models.role import Role
 from app.utils.pagination import PageParams, PageResult
@@ -40,7 +40,7 @@ class RoleRepository:
         role = await Role.get(role_id)
         if not role:
             return None
-        update_data["updated_at"] = datetime.utcnow()
+        update_data["updated_at"] = int(time.time())
         await role.update({"$set": update_data})
         return await Role.get(role_id)
 

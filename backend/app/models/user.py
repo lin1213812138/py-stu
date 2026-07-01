@@ -1,4 +1,4 @@
-from datetime import datetime
+import time
 from typing import Optional
 from uuid import uuid4
 
@@ -19,9 +19,9 @@ class User(Document):
     role_ids: list[str] = []
     role: str = "user"
     status: int = 1
-    last_login_time: Optional[datetime] = None
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    last_login_time: Optional[int] = None
+    created_at: int = Field(default_factory=lambda: int(time.time()))
+    updated_at: int = Field(default_factory=lambda: int(time.time()))
 
     class Settings:
         name = "users"

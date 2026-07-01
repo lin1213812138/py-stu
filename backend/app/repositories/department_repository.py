@@ -1,4 +1,4 @@
-from datetime import datetime
+import time
 from typing import Optional
 from app.models.department import Department
 
@@ -30,7 +30,7 @@ class DepartmentRepository:
         dept = await Department.get(dept_id)
         if not dept:
             return None
-        update_data["updated_at"] = datetime.utcnow()
+        update_data["updated_at"] = int(time.time())
         await dept.update({"$set": update_data})
         return await Department.get(dept_id)
 

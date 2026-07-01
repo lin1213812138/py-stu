@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel
 
@@ -28,7 +27,7 @@ class CompanyResponse(BaseModel):
     contact: Optional[str] = None
     status: int
     sort: int
-    created_at: datetime
-    updated_at: datetime
+    created_at: int
+    updated_at: int
 
     model_config = {"from_attributes": True}

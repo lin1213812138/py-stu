@@ -1,4 +1,4 @@
-from datetime import datetime
+import time
 from typing import Optional
 from app.models.position import Position
 
@@ -22,7 +22,7 @@ class PositionRepository:
         pos = await Position.get(pos_id)
         if not pos:
             return None
-        update_data["updated_at"] = datetime.utcnow()
+        update_data["updated_at"] = int(time.time())
         await pos.update({"$set": update_data})
         return await Position.get(pos_id)
 

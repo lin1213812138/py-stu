@@ -1,4 +1,4 @@
-from datetime import datetime
+import time
 from uuid import uuid4
 
 from beanie import Document
@@ -11,8 +11,8 @@ class Position(Document):
     department_id: str
     status: int = 1
     sort: int = 0
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: int = Field(default_factory=lambda: int(time.time()))
+    updated_at: int = Field(default_factory=lambda: int(time.time()))
 
     class Settings:
         name = "positions"

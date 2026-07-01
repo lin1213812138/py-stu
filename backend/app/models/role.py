@@ -1,4 +1,4 @@
-from datetime import datetime
+import time
 from typing import Optional
 from uuid import uuid4
 
@@ -18,8 +18,8 @@ class Role(Document):
     permissions: list[RolePermission] = []
     status: int = 1
     remark: Optional[str] = None
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: int = Field(default_factory=lambda: int(time.time()))
+    updated_at: int = Field(default_factory=lambda: int(time.time()))
 
     class Settings:
         name = "roles"

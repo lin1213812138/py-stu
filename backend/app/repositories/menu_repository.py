@@ -1,4 +1,4 @@
-from datetime import datetime
+import time
 from typing import Optional
 from app.models.menu import Menu
 
@@ -26,7 +26,7 @@ class MenuRepository:
         menu = await Menu.get(menu_id)
         if not menu:
             return None
-        update_data["updated_at"] = datetime.utcnow()
+        update_data["updated_at"] = int(time.time())
         await menu.update({"$set": update_data})
         return await Menu.get(menu_id)
 

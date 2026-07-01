@@ -1,4 +1,4 @@
-from datetime import datetime
+import time
 from typing import Optional
 from app.models.user import User
 from app.utils.pagination import PageParams, PageResult
@@ -58,7 +58,7 @@ class UserRepository:
         user = await User.get(user_id)
         if not user:
             return None
-        update_data["updated_at"] = datetime.utcnow()
+        update_data["updated_at"] = int(time.time())
         await user.update({"$set": update_data})
         return await User.get(user_id)
 

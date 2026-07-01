@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, EmailStr
 
@@ -36,12 +35,12 @@ class UserResponse(BaseModel):
     avatar: Optional[str] = None
     role: str
     status: int
-    last_login_time: Optional[datetime] = None
+    last_login_time: Optional[int] = None
     company_id: Optional[str] = None
     department_id: Optional[str] = None
     position_id: Optional[str] = None
     role_ids: list[str] = []
-    created_at: datetime
-    updated_at: datetime
+    created_at: int
+    updated_at: int
 
     model_config = {"from_attributes": True}
