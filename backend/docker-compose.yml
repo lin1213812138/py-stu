@@ -18,7 +18,9 @@ services:
     ports:
       - "8000:8000"
     env_file:
-      - .env
+      - .env.${ENV:-development}
+    environment:
+      - ENV=${ENV:-development}
     volumes:
       - .:/app
     depends_on:
