@@ -1,89 +1,94 @@
-# AGENTS.md — Project Guidelines
+# AGENTS.md — 项目规范
 
-## Project Overview
-Enterprise-grade FastAPI + MongoDB backend with modular architecture.
+## 项目概述
+企业级 FastAPI + MongoDB 后端，模块化架构。
 
-## Tech Stack
+## 技术栈
 - Python 3.12+, FastAPI, Pydantic v2, Uvicorn
-- MongoDB 7+, Motor, Beanie ODM
+- MongoDB 7+, PyMongo, Beanie ODM
 - Redis, JWT, bcrypt
-- uv (dependency management)
+- uv (依赖管理)
 - Docker, Pytest, Loguru
 
-## Architecture Rules
+## 架构规范
 
-### Strict Layering (MANDATORY)
+### 严格分层（必须遵守）
 ```
 Router → Service → Repository → ODM (Beanie)
 ```
-- **Router**: parameter validation + return only
-- **Service**: business logic only
-- **Repository**: MongoDB CRUD only
-- **Never** put database code in router or service
+- **Router**：只做参数校验和返回
+- **Service**：只做业务逻辑
+- **Repository**：只做 MongoDB CRUD
+- **严禁**在 Router 或 Service 中写数据库操作代码
 
-### Code Conventions
-- All I/O must be `async/await`
-- Type hints required on all function signatures
-- Docstrings: Google style
-- No print statements — use `loguru`
-- Imports order: stdlib → third-party → local (separated by blank line)
+### 代码风格
+- 所有 I/O 操作必须使用 `async/await`
+- 所有函数签名必须有类型注解
+- 文档字符串：Google 风格
+- 禁止 `print` — 使用 `loguru`
+- 导入顺序：标准库 → 第三方 → 本地（空行分隔）
 
-### Data Model Conventions (MANDATORY)
-- **ID type**: All document `_id` fields use `str`, generated via `lambda: str(uuid4())`
+### 数据模型规范（必须遵守）
+- **ID 类型**：所有文档 `_id` 字段使用 `str`，通过 `lambda: str(uuid4())` 生成
   ```python
   id: str = Field(default_factory=lambda: str(uuid4()), alias="_id")
   ```
-- **Foreign keys**: All reference IDs use `str` (e.g. `company_id: str`, `user_id: str`)
-- **Timestamps**: All time fields use `int` (millisecond Unix timestamp), generated via `int(time.time() * 1000)`
+- **外键类型**：所有引用 ID 使用 `str`（如 `company_id: str`、`user_id: str`）
+- **时间戳**：所有时间字段使用 `int`（毫秒级 Unix 时间戳），通过 `int(time.time() * 1000)` 生成
   ```python
   created_at: int = Field(default_factory=lambda: int(time.time() * 1000))
   updated_at: int = Field(default_factory=lambda: int(time.time() * 1000))
   ```
-- **Update timestamps**: Repositories MUST set `update_data["updated_at"] = int(time.time() * 1000)` on every update
-- **DO NOT** import or use `UUID` type or `datetime` type in models or schemas
+- **更新时间**：Repository 层每次 update 必须设置 `update_data["updated_at"] = int(time.time() * 1000)`
+- **禁止**在模型或 schema 中使用 `UUID` 类型或 `datetime` 类型
 
-### Response Format (ALL endpoints)
+### 统一返回格式（所有接口）
 ```json
 {"code": 0, "message": "success", "data": {}}
 ```
-Error responses use business error codes (10001+).
+错误响应使用业务错误码（10001+）。
 
-### API Convention
-- Prefix: `/api/v1/`
-- Version in URL path
-- Dependency injection via `Depends()` for auth
+### API 约定
+- 前缀：`/api/v1/`
+- 版本号在 URL 路径中
+- 鉴权通过 `Depends()` 依赖注入
 
-### Token & Auth
-- JWT access_token (short-lived, configurable TTL)
-- JWT refresh_token (longer TTL, stored in Redis)
-- Token revocation via Redis blacklist on logout
-- `get_current_user()` as FastAPI dependency
+### Token 与认证
+- JWT access_token（短期，TTL 可配置）
+- JWT refresh_token（长期，存储在 Redis 中）
+- 退出登录时通过 Redis 黑名单实现 Token 吊销
+- `get_current_user()` 作为 FastAPI 依赖
 
-### Testing
+### 权限控制
+- 权限标识格式：`system:<模块>:<操作>`（如 `system:user:create`）
+- `require_permission(key)` 替代旧版 `require_role()`
+- 用户通过 `role_ids` 多对多关联角色，角色包含 `permissions`（菜单+按钮权限）
+
+### 测试
 - pytest + httpx AsyncClient
-- Tests mirror `app/` structure under `tests/`
-- Each test file: `test_<module>.py`
-- Mock external services (MongoDB, Redis) where possible
+- 测试目录 `tests/` 镜像 `app/` 结构
+- 文件命名：`test_<模块>.py`
+- 尽可能 mock 外部服务（MongoDB、Redis）
 
-### Project Lifecycle
-1. Design → docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md
-2. Implementation plan → execute via writing-plans skill
-3. No code changes without approved design
+### 项目流程
+1. 设计 → docs/superpowers/specs/YYYY-MM-DD-<主题>-design.md
+2. 实施计划 → 通过 writing-plans skill 执行
+3. 无批准设计不得修改代码
 
-## File Structure
+## 目录结构
 ```
 backend/
 ├── app/
 │   ├── main.py
-│   ├── core/           → config, security, logger, exceptions
-│   ├── api/v1/         → router, deps, endpoints
-│   ├── models/         → Beanie Documents
-│   ├── schemas/        → Pydantic schemas
-│   ├── services/       → business logic
+│   ├── core/           → 配置、安全、日志、异常
+│   ├── api/v1/         → 路由、依赖、端点
+│   ├── models/         → Beanie 文档模型
+│   ├── schemas/        → Pydantic 校验
+│   ├── services/       → 业务逻辑
 │   ├── repositories/   → MongoDB CRUD
-│   ├── database/       → mongodb.py, redis.py
-│   ├── utils/          → response.py, pagination.py
-│   ├── middleware/     → auth middleware
+│   ├── database/       → mongodb.py、redis.py
+│   ├── utils/          → response.py、pagination.py
+│   ├── middleware/     → 鉴权中间件
 │   └── tests/
 ├── Dockerfile
 ├── docker-compose.yml
