@@ -8,7 +8,7 @@ redis_client: Redis | None = None
 
 async def init_redis() -> None:
     global redis_client
-    redis_client = Redis.from_url(settings.REDIS_URL, decode_responses=True)
+    redis_client = Redis.from_url(settings.REDIS_URL, decode_responses=True, protocol=2)
     await redis_client.ping()
     logger.info(f"Redis connected: {settings.REDIS_URL}")
 
