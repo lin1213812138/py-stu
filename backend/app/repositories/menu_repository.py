@@ -1,0 +1,41 @@
+from datetime import datetime
+from typing import Optional
+from uuid import UUID
+
+from app.models.menu import Menu
+
+
+class MenuRepository:
+
+    @staticmethod
+    async def create(menu: Menu) -> Menu:
+        return await menu.insert()
+
+    @staticmethod
+    async def get_by_id(menu_id: UUID) -> Optional[Menu]:
+        return await Menu.get(menu_id)
+
+    @staticmethod
+    async def get_all() -> list[Menu]:
+        return await Menu.find({"status": 1}).sort("sort").to_list()
+
+    @staticmethod
+    async def get_by_ids(menu_ids: list[UUID]) -> list[Menu]:
+        return await Menu.find({"_id": {"$in": menu_ids}, "status": 1}).to_list()
+
+    @staticmethod
+    async def update(menu_id: UUID, update_data: dict) -> Optional[Menu]:
+        menu = await Menu.get(menu_id)
+        if not menu:
+            return None
+        update_data["updated_at"] = datetime.utcnow()
+        await menu.update({"$set": update_data})
+        return await Menu.get(menu_id)
+
+    @staticmethod
+    async def delete(menu_id: UUID) -> bool:
+        menu = await Menu.get(menu_id)
+        if not menu:
+            return False
+        await menu.delete()
+        return True
