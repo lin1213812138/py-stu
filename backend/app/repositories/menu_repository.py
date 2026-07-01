@@ -26,7 +26,7 @@ class MenuRepository:
         menu = await Menu.get(menu_id)
         if not menu:
             return None
-        update_data["updated_at"] = int(time.time())
+        update_data["updated_at"] = int(time.time() * 1000)
         await menu.update({"$set": update_data})
         return await Menu.get(menu_id)
 
