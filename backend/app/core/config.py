@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+
 from loguru import logger
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -19,7 +20,7 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
     )
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: object) -> None:
         env = os.getenv("ENV", "development")
         env_file = f".env.{env}"
         if not Path(env_file).exists():
