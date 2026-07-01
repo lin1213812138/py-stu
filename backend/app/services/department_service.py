@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from app.core.exceptions import AppException
 from app.models.company import Company
 from app.models.department import Department
@@ -13,7 +11,7 @@ class DepartmentService:
     def __init__(self):
         self.repo = DepartmentRepository()
 
-    async def get_tree(self, company_id: UUID) -> list[dict]:
+    async def get_tree(self, company_id: str) -> list[dict]:
         depts = await self.repo.get_by_company(company_id)
         dept_map = {str(d.id): DepartmentResponse.model_validate(d).model_dump() for d in depts}
         for d in depts:
@@ -27,7 +25,7 @@ class DepartmentService:
                 tree.append(node)
         return tree
 
-    async def get_by_id(self, dept_id: UUID) -> Department:
+    async def get_by_id(self, dept_id: str) -> Department:
         dept = await self.repo.get_by_id(dept_id)
         if not dept:
             raise AppException(code=10009, message="Department not found")
@@ -37,13 +35,13 @@ class DepartmentService:
         dept = Department(**data.model_dump())
         return await self.repo.create(dept)
 
-    async def update(self, dept_id: UUID, data: DepartmentUpdate) -> Department:
+    async def update(self, dept_id: str, data: DepartmentUpdate) -> Department:
         dept = await self.repo.update(dept_id, data.model_dump(exclude_unset=True))
         if not dept:
             raise AppException(code=10009, message="Department not found")
         return dept
 
-    async def delete(self, dept_id: UUID) -> None:
+    async def delete(self, dept_id: str) -> None:
         children = await self.repo.get_children(dept_id)
         if children:
             raise AppException(code=10013, message="Department has children, cannot delete")

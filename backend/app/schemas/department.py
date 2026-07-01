@@ -1,32 +1,30 @@
 from datetime import datetime
 from typing import Optional
-from uuid import UUID
-
 from pydantic import BaseModel
 
 
 class DepartmentCreate(BaseModel):
     name: str
-    company_id: UUID
-    parent_id: Optional[UUID] = None
-    leader_id: Optional[UUID] = None
+    company_id: str
+    parent_id: Optional[str] = None
+    leader_id: Optional[str] = None
     sort: int = 0
 
 
 class DepartmentUpdate(BaseModel):
     name: Optional[str] = None
-    parent_id: Optional[UUID] = None
-    leader_id: Optional[UUID] = None
+    parent_id: Optional[str] = None
+    leader_id: Optional[str] = None
     status: Optional[int] = None
     sort: Optional[int] = None
 
 
 class DepartmentResponse(BaseModel):
-    id: UUID
+    id: str
     name: str
-    company_id: UUID
-    parent_id: Optional[UUID] = None
-    leader_id: Optional[UUID] = None
+    company_id: str
+    parent_id: Optional[str] = None
+    leader_id: Optional[str] = None
     status: int
     sort: int
     children: list["DepartmentResponse"] = []

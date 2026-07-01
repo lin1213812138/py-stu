@@ -1,5 +1,4 @@
 from typing import Annotated
-from uuid import UUID
 
 from fastapi import Depends
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -29,7 +28,7 @@ async def get_current_user(
     if blacklisted:
         raise TokenError()
 
-    user = await UserRepository.get_by_id(UUID(payload["sub"]))
+    user = await UserRepository.get_by_id(payload["sub"])
     if not user or user.status == 0:
         raise TokenError()
 

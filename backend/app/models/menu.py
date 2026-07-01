@@ -1,14 +1,14 @@
 from datetime import datetime
 from typing import Optional
-from uuid import UUID, uuid4
+from uuid import uuid4
 
 from beanie import Document
 from pydantic import Field
 
 
 class Menu(Document):
-    id: UUID = Field(default_factory=uuid4, alias="_id")
-    parent_id: Optional[UUID] = None
+    id: str = Field(default_factory=lambda: str(uuid4()), alias="_id")
+    parent_id: Optional[str] = None
     type: str
     name: str
     permission_key: Optional[str] = None

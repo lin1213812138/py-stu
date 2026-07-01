@@ -1,6 +1,4 @@
 from typing import Optional
-from uuid import UUID
-
 from app.core.exceptions import UserNotFoundError
 from app.core.security import hash_password
 from app.models.user import User
@@ -14,7 +12,7 @@ class UserService:
     def __init__(self):
         self.repo = UserRepository()
 
-    async def get_me(self, user_id: UUID) -> User:
+    async def get_me(self, user_id: str) -> User:
         user = await self.repo.get_by_id(user_id)
         if not user:
             raise UserNotFoundError()
@@ -29,7 +27,7 @@ class UserService:
     ) -> PageResult:
         return await self.repo.get_list(params, username, email, status)
 
-    async def get_user(self, user_id: UUID) -> User:
+    async def get_user(self, user_id: str) -> User:
         user = await self.repo.get_by_id(user_id)
         if not user:
             raise UserNotFoundError()
@@ -50,14 +48,14 @@ class UserService:
         )
         return await self.repo.create(user)
 
-    async def update_user(self, user_id: UUID, data: UserUpdate) -> User:
+    async def update_user(self, user_id: str, data: UserUpdate) -> User:
         update_dict = data.model_dump(exclude_unset=True)
         user = await self.repo.update(user_id, update_dict)
         if not user:
             raise UserNotFoundError()
         return user
 
-    async def delete_user(self, user_id: UUID) -> None:
+    async def delete_user(self, user_id: str) -> None:
         deleted = await self.repo.delete(user_id)
         if not deleted:
             raise UserNotFoundError()

@@ -1,7 +1,5 @@
 from datetime import datetime
 from typing import Optional
-from uuid import UUID
-
 from pydantic import BaseModel
 
 from app.models.role import RolePermission
@@ -23,7 +21,7 @@ class RoleUpdate(BaseModel):
 
 
 class RoleResponse(BaseModel):
-    id: UUID
+    id: str
     name: str
     code: str
     permissions: list[RolePermission] = []

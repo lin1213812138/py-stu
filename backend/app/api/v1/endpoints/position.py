@@ -1,6 +1,4 @@
 from typing import Annotated
-from uuid import UUID
-
 from fastapi import APIRouter, Depends, Query
 
 from app.api.deps import get_current_user, require_permission
@@ -16,7 +14,7 @@ service = PositionService()
 @router.get("")
 async def list_positions(
     current_user: Annotated[User, Depends(get_current_user)],
-    department_id: UUID = Query(...),
+    department_id: str = Query(...),
 ) -> APIResponse:
     items = await service.get_by_department(department_id)
     return APIResponse(data=[PositionResponse.model_validate(u).model_dump() for u in items])
@@ -33,7 +31,7 @@ async def create_position(
 
 @router.get("/{pos_id}")
 async def get_position(
-    pos_id: UUID,
+    pos_id: str,
     current_user: Annotated[User, Depends(get_current_user)],
 ) -> APIResponse:
     pos = await service.get_by_id(pos_id)
@@ -42,7 +40,7 @@ async def get_position(
 
 @router.put("/{pos_id}")
 async def update_position(
-    pos_id: UUID,
+    pos_id: str,
     body: PositionUpdate,
     current_user: Annotated[User, Depends(require_permission("system:position:update"))],
 ) -> APIResponse:
@@ -52,7 +50,7 @@ async def update_position(
 
 @router.delete("/{pos_id}")
 async def delete_position(
-    pos_id: UUID,
+    pos_id: str,
     current_user: Annotated[User, Depends(require_permission("system:position:delete"))],
 ) -> APIResponse:
     await service.delete(pos_id)

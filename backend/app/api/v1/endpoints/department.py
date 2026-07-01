@@ -1,6 +1,4 @@
 from typing import Annotated
-from uuid import UUID
-
 from fastapi import APIRouter, Depends, Query
 
 from app.api.deps import get_current_user, require_permission
@@ -16,7 +14,7 @@ service = DepartmentService()
 @router.get("")
 async def list_departments(
     current_user: Annotated[User, Depends(get_current_user)],
-    company_id: UUID = Query(...),
+    company_id: str = Query(...),
 ) -> APIResponse:
     tree = await service.get_tree(company_id)
     return APIResponse(data=tree)
@@ -33,7 +31,7 @@ async def create_department(
 
 @router.get("/{dept_id}")
 async def get_department(
-    dept_id: UUID,
+    dept_id: str,
     current_user: Annotated[User, Depends(get_current_user)],
 ) -> APIResponse:
     dept = await service.get_by_id(dept_id)
@@ -42,7 +40,7 @@ async def get_department(
 
 @router.put("/{dept_id}")
 async def update_department(
-    dept_id: UUID,
+    dept_id: str,
     body: DepartmentUpdate,
     current_user: Annotated[User, Depends(require_permission("system:dept:update"))],
 ) -> APIResponse:
@@ -52,7 +50,7 @@ async def update_department(
 
 @router.delete("/{dept_id}")
 async def delete_department(
-    dept_id: UUID,
+    dept_id: str,
     current_user: Annotated[User, Depends(require_permission("system:dept:delete"))],
 ) -> APIResponse:
     await service.delete(dept_id)

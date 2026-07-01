@@ -1,12 +1,10 @@
 from datetime import datetime
 from typing import Optional
-from uuid import UUID
-
 from pydantic import BaseModel
 
 
 class MenuCreate(BaseModel):
-    parent_id: Optional[UUID] = None
+    parent_id: Optional[str] = None
     type: str
     name: str
     permission_key: Optional[str] = None
@@ -23,7 +21,7 @@ class MenuCreate(BaseModel):
 
 
 class MenuUpdate(BaseModel):
-    parent_id: Optional[UUID] = None
+    parent_id: Optional[str] = None
     type: Optional[str] = None
     name: Optional[str] = None
     permission_key: Optional[str] = None
@@ -41,8 +39,8 @@ class MenuUpdate(BaseModel):
 
 
 class MenuResponse(BaseModel):
-    id: UUID
-    parent_id: Optional[UUID] = None
+    id: str
+    parent_id: Optional[str] = None
     type: str
     name: str
     permission_key: Optional[str] = None

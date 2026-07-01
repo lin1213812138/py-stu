@@ -1,6 +1,4 @@
 from typing import Annotated, Optional
-from uuid import UUID
-
 from fastapi import APIRouter, Depends, Query
 
 from app.api.deps import get_current_user, require_permission
@@ -46,7 +44,7 @@ async def create_company(
 
 @router.get("/{company_id}")
 async def get_company(
-    company_id: UUID,
+    company_id: str,
     current_user: Annotated[User, Depends(get_current_user)],
 ) -> APIResponse:
     company = await service.get_by_id(company_id)
@@ -55,7 +53,7 @@ async def get_company(
 
 @router.put("/{company_id}")
 async def update_company(
-    company_id: UUID,
+    company_id: str,
     body: CompanyUpdate,
     current_user: Annotated[User, Depends(require_permission("system:company:update"))],
 ) -> APIResponse:
@@ -65,7 +63,7 @@ async def update_company(
 
 @router.delete("/{company_id}")
 async def delete_company(
-    company_id: UUID,
+    company_id: str,
     current_user: Annotated[User, Depends(require_permission("system:company:delete"))],
 ) -> APIResponse:
     await service.delete(company_id)

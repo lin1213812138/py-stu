@@ -1,7 +1,5 @@
 from datetime import datetime
 from typing import Optional
-from uuid import UUID
-
 from pydantic import BaseModel
 
 
@@ -23,7 +21,7 @@ class CompanyUpdate(BaseModel):
 
 
 class CompanyResponse(BaseModel):
-    id: UUID
+    id: str
     name: str
     short_name: Optional[str] = None
     address: Optional[str] = None

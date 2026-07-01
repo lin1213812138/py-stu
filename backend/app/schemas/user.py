@@ -1,7 +1,5 @@
 from datetime import datetime
 from typing import Optional
-from uuid import UUID
-
 from pydantic import BaseModel, EmailStr
 
 
@@ -12,10 +10,10 @@ class UserCreate(BaseModel):
     nickname: Optional[str] = None
     avatar: Optional[str] = None
     role: str = "user"
-    company_id: Optional[UUID] = None
-    department_id: Optional[UUID] = None
-    position_id: Optional[UUID] = None
-    role_ids: list[UUID] = []
+    company_id: Optional[str] = None
+    department_id: Optional[str] = None
+    position_id: Optional[str] = None
+    role_ids: list[str] = []
 
 
 class UserUpdate(BaseModel):
@@ -24,14 +22,14 @@ class UserUpdate(BaseModel):
     avatar: Optional[str] = None
     role: Optional[str] = None
     status: Optional[int] = None
-    company_id: Optional[UUID] = None
-    department_id: Optional[UUID] = None
-    position_id: Optional[UUID] = None
-    role_ids: Optional[list[UUID]] = None
+    company_id: Optional[str] = None
+    department_id: Optional[str] = None
+    position_id: Optional[str] = None
+    role_ids: Optional[list[str]] = None
 
 
 class UserResponse(BaseModel):
-    id: UUID
+    id: str
     username: str
     email: str
     nickname: Optional[str] = None
@@ -39,10 +37,10 @@ class UserResponse(BaseModel):
     role: str
     status: int
     last_login_time: Optional[datetime] = None
-    company_id: Optional[UUID] = None
-    department_id: Optional[UUID] = None
-    position_id: Optional[UUID] = None
-    role_ids: list[UUID] = []
+    company_id: Optional[str] = None
+    department_id: Optional[str] = None
+    position_id: Optional[str] = None
+    role_ids: list[str] = []
     created_at: datetime
     updated_at: datetime
 

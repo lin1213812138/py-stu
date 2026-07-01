@@ -1,6 +1,4 @@
 from typing import Annotated, Optional
-from uuid import UUID
-
 from fastapi import APIRouter, Depends, Query
 
 from app.api.deps import get_current_user, require_permission
@@ -46,7 +44,7 @@ async def create_role(
 
 @router.get("/{role_id}")
 async def get_role(
-    role_id: UUID,
+    role_id: str,
     current_user: Annotated[User, Depends(get_current_user)],
 ) -> APIResponse:
     role = await service.get_by_id(role_id)
@@ -55,7 +53,7 @@ async def get_role(
 
 @router.put("/{role_id}")
 async def update_role(
-    role_id: UUID,
+    role_id: str,
     body: RoleUpdate,
     current_user: Annotated[User, Depends(require_permission("system:role:update"))],
 ) -> APIResponse:
@@ -65,7 +63,7 @@ async def update_role(
 
 @router.delete("/{role_id}")
 async def delete_role(
-    role_id: UUID,
+    role_id: str,
     current_user: Annotated[User, Depends(require_permission("system:role:delete"))],
 ) -> APIResponse:
     await service.delete(role_id)

@@ -1,6 +1,4 @@
 from typing import Annotated, Optional
-from uuid import UUID
-
 from fastapi import APIRouter, Depends, Query
 
 from app.api.deps import get_current_user, require_role
@@ -39,7 +37,7 @@ async def list_users(
 
 @router.get("/{user_id}")
 async def get_user(
-    user_id: UUID,
+    user_id: str,
     current_user: Annotated[User, Depends(get_current_user)],
 ) -> APIResponse:
     user = await service.get_user(user_id)
@@ -57,7 +55,7 @@ async def create_user(
 
 @router.put("/{user_id}")
 async def update_user(
-    user_id: UUID,
+    user_id: str,
     body: UserUpdate,
     current_user: Annotated[User, Depends(get_current_user)],
 ) -> APIResponse:
@@ -67,7 +65,7 @@ async def update_user(
 
 @router.delete("/{user_id}")
 async def delete_user(
-    user_id: UUID,
+    user_id: str,
     current_user: Annotated[User, Depends(require_role("admin"))],
 ) -> APIResponse:
     await service.delete_user(user_id)

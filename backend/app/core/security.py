@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta, timezone
-from uuid import UUID
 
 import bcrypt
 import jwt
@@ -15,10 +14,10 @@ def verify_password(plain: str, hashed: str) -> bool:
     return bcrypt.checkpw(plain.encode(), hashed.encode())
 
 
-def create_access_token(user_id: UUID, username: str, role: str) -> str:
+def create_access_token(user_id: str, username: str, role: str) -> str:
     expire = datetime.now(timezone.utc) + timedelta(seconds=settings.JWT_ACCESS_EXPIRE)
     payload = {
-        "sub": str(user_id),
+        "sub": user_id,
         "username": username,
         "role": role,
         "exp": expire,
@@ -28,10 +27,10 @@ def create_access_token(user_id: UUID, username: str, role: str) -> str:
     return jwt.encode(payload, settings.JWT_SECRET, algorithm="HS256")
 
 
-def create_refresh_token(user_id: UUID) -> str:
+def create_refresh_token(user_id: str) -> str:
     expire = datetime.now(timezone.utc) + timedelta(seconds=settings.JWT_REFRESH_EXPIRE)
     payload = {
-        "sub": str(user_id),
+        "sub": user_id,
         "exp": expire,
         "iat": datetime.now(timezone.utc),
         "type": "refresh",

@@ -1,7 +1,5 @@
 from datetime import datetime
 from typing import Optional
-from uuid import UUID
-
 from app.models.role import Role
 from app.utils.pagination import PageParams, PageResult
 
@@ -13,7 +11,7 @@ class RoleRepository:
         return await role.insert()
 
     @staticmethod
-    async def get_by_id(role_id: UUID) -> Optional[Role]:
+    async def get_by_id(role_id: str) -> Optional[Role]:
         return await Role.get(role_id)
 
     @staticmethod
@@ -34,11 +32,11 @@ class RoleRepository:
         return await Role.find({"status": 1}).to_list()
 
     @staticmethod
-    async def get_by_ids(role_ids: list[UUID]) -> list[Role]:
+    async def get_by_ids(role_ids: list[str]) -> list[Role]:
         return await Role.find({"_id": {"$in": role_ids}, "status": 1}).to_list()
 
     @staticmethod
-    async def update(role_id: UUID, update_data: dict) -> Optional[Role]:
+    async def update(role_id: str, update_data: dict) -> Optional[Role]:
         role = await Role.get(role_id)
         if not role:
             return None
@@ -47,7 +45,7 @@ class RoleRepository:
         return await Role.get(role_id)
 
     @staticmethod
-    async def delete(role_id: UUID) -> bool:
+    async def delete(role_id: str) -> bool:
         role = await Role.get(role_id)
         if not role:
             return False

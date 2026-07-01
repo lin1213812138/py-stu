@@ -1,6 +1,4 @@
 from typing import Annotated
-from uuid import UUID
-
 from fastapi import APIRouter, Depends
 
 from app.api.deps import get_current_user, require_permission
@@ -38,7 +36,7 @@ async def create_menu(
 
 @router.get("/{menu_id}")
 async def get_menu(
-    menu_id: UUID,
+    menu_id: str,
     current_user: Annotated[User, Depends(get_current_user)],
 ) -> APIResponse:
     menu = await service.get_by_id(menu_id)
@@ -47,7 +45,7 @@ async def get_menu(
 
 @router.put("/{menu_id}")
 async def update_menu(
-    menu_id: UUID,
+    menu_id: str,
     body: MenuUpdate,
     current_user: Annotated[User, Depends(require_permission("system:menu:update"))],
 ) -> APIResponse:
@@ -57,7 +55,7 @@ async def update_menu(
 
 @router.delete("/{menu_id}")
 async def delete_menu(
-    menu_id: UUID,
+    menu_id: str,
     current_user: Annotated[User, Depends(require_permission("system:menu:delete"))],
 ) -> APIResponse:
     await service.delete(menu_id)

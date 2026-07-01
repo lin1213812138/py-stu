@@ -1,7 +1,5 @@
 from datetime import datetime
 from typing import Optional
-from uuid import UUID
-
 from app.models.company import Company
 from app.utils.pagination import PageParams, PageResult
 
@@ -13,7 +11,7 @@ class CompanyRepository:
         return await company.insert()
 
     @staticmethod
-    async def get_by_id(company_id: UUID) -> Optional[Company]:
+    async def get_by_id(company_id: str) -> Optional[Company]:
         return await Company.get(company_id)
 
     @staticmethod
@@ -34,7 +32,7 @@ class CompanyRepository:
         return await Company.find({"status": 1}).sort("sort").to_list()
 
     @staticmethod
-    async def update(company_id: UUID, update_data: dict) -> Optional[Company]:
+    async def update(company_id: str, update_data: dict) -> Optional[Company]:
         company = await Company.get(company_id)
         if not company:
             return None
@@ -43,7 +41,7 @@ class CompanyRepository:
         return await Company.get(company_id)
 
     @staticmethod
-    async def delete(company_id: UUID) -> bool:
+    async def delete(company_id: str) -> bool:
         company = await Company.get(company_id)
         if not company:
             return False

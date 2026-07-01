@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from app.models.menu import Menu
 from app.models.role import Role
 
@@ -7,7 +5,7 @@ from app.models.role import Role
 class PermissionService:
 
     @staticmethod
-    async def get_user_permissions(role_ids: list[UUID]) -> set[str]:
+    async def get_user_permissions(role_ids: list[str]) -> set[str]:
         if not role_ids:
             return set()
         roles = await Role.find({"_id": {"$in": role_ids}, "status": 1}).to_list()
@@ -25,7 +23,7 @@ class PermissionService:
         return keys
 
     @staticmethod
-    async def get_user_menu_ids(role_ids: list[UUID]) -> set[UUID]:
+    async def get_user_menu_ids(role_ids: list[str]) -> set[str]:
         if not role_ids:
             return set()
         roles = await Role.find({"_id": {"$in": role_ids}, "status": 1}).to_list()

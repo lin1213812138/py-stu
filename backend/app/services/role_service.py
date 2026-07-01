@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from app.core.exceptions import AppException
 from app.models.role import Role
 from app.repositories.role_repository import RoleRepository
@@ -18,7 +16,7 @@ class RoleService:
     async def get_all(self) -> list[Role]:
         return await self.repo.get_all()
 
-    async def get_by_id(self, role_id: UUID) -> Role:
+    async def get_by_id(self, role_id: str) -> Role:
         role = await self.repo.get_by_id(role_id)
         if not role:
             raise AppException(code=10012, message="Role not found")
@@ -31,7 +29,7 @@ class RoleService:
         role = Role(**data.model_dump())
         return await self.repo.create(role)
 
-    async def update(self, role_id: UUID, data: RoleUpdate) -> Role:
+    async def update(self, role_id: str, data: RoleUpdate) -> Role:
         update_dict = data.model_dump(exclude_unset=True)
         if "code" in update_dict:
             existing = await self.repo.get_by_code(update_dict["code"])
@@ -42,7 +40,7 @@ class RoleService:
             raise AppException(code=10012, message="Role not found")
         return role
 
-    async def delete(self, role_id: UUID) -> None:
+    async def delete(self, role_id: str) -> None:
         deleted = await self.repo.delete(role_id)
         if not deleted:
             raise AppException(code=10012, message="Role not found")

@@ -10,18 +10,18 @@ def test_password_hash_and_verify():
 
 
 def test_access_token():
-    uid = uuid4()
+    uid = str(uuid4())
     token = create_access_token(uid, "alice", "user")
     payload = decode_token(token)
-    assert payload["sub"] == str(uid)
+    assert payload["sub"] == uid
     assert payload["username"] == "alice"
     assert payload["role"] == "user"
     assert payload["type"] == "access"
 
 
 def test_refresh_token():
-    uid = uuid4()
+    uid = str(uuid4())
     token = create_refresh_token(uid)
     payload = decode_token(token)
-    assert payload["sub"] == str(uid)
+    assert payload["sub"] == uid
     assert payload["type"] == "refresh"

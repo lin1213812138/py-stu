@@ -1,13 +1,11 @@
 from datetime import datetime
 from typing import Optional
-from uuid import UUID
-
 from pydantic import BaseModel
 
 
 class PositionCreate(BaseModel):
     name: str
-    department_id: UUID
+    department_id: str
     sort: int = 0
 
 
@@ -18,9 +16,9 @@ class PositionUpdate(BaseModel):
 
 
 class PositionResponse(BaseModel):
-    id: UUID
+    id: str
     name: str
-    department_id: UUID
+    department_id: str
     status: int
     sort: int
     created_at: datetime

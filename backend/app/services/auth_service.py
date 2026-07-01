@@ -1,6 +1,4 @@
 from datetime import datetime
-from uuid import UUID
-
 from redis.asyncio import Redis
 
 from app.core.config import settings
@@ -50,7 +48,7 @@ class AuthService:
 
         return TokenResponse(access_token=access_token, refresh_token=refresh_token)
 
-    async def logout(self, user_id: UUID, access_token: str, redis: Redis) -> None:
+    async def logout(self, user_id: str, access_token: str, redis: Redis) -> None:
         await redis.delete(f"refresh_token:{user_id}")
         await redis.setex(f"blacklist:{access_token}", settings.JWT_ACCESS_EXPIRE, "1")
 
@@ -63,7 +61,7 @@ class AuthService:
         if payload.get("type") != "refresh":
             raise TokenError()
 
-        user_id = UUID(payload["sub"])
+        user_id = payload["sub"]
         stored = await redis.get(f"refresh_token:{user_id}")
         if stored != refresh_token:
             raise TokenError()

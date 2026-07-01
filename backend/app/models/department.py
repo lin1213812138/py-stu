@@ -1,17 +1,17 @@
 from datetime import datetime
 from typing import Optional
-from uuid import UUID, uuid4
+from uuid import uuid4
 
 from beanie import Document
 from pydantic import Field
 
 
 class Department(Document):
-    id: UUID = Field(default_factory=uuid4, alias="_id")
+    id: str = Field(default_factory=lambda: str(uuid4()), alias="_id")
     name: str
-    company_id: UUID
-    parent_id: Optional[UUID] = None
-    leader_id: Optional[UUID] = None
+    company_id: str
+    parent_id: Optional[str] = None
+    leader_id: Optional[str] = None
     status: int = 1
     sort: int = 0
     created_at: datetime = Field(default_factory=datetime.utcnow)
