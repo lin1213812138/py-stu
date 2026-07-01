@@ -14,8 +14,8 @@ class Company(Document):
     contact: Optional[str] = None
     status: int = 1
     sort: int = 0
-    created_at: int = Field(default_factory=lambda: int(time.time()))
-    updated_at: int = Field(default_factory=lambda: int(time.time()))
+    created_at: int = Field(default_factory=lambda: int(time.time() * 1000))
+    updated_at: int = Field(default_factory=lambda: int(time.time() * 1000))
 
     class Settings:
         name = "companies"

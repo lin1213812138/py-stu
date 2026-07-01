@@ -20,8 +20,8 @@ class User(Document):
     role: str = "user"
     status: int = 1
     last_login_time: Optional[int] = None
-    created_at: int = Field(default_factory=lambda: int(time.time()))
-    updated_at: int = Field(default_factory=lambda: int(time.time()))
+    created_at: int = Field(default_factory=lambda: int(time.time() * 1000))
+    updated_at: int = Field(default_factory=lambda: int(time.time() * 1000))
 
     class Settings:
         name = "users"

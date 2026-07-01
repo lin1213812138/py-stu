@@ -36,7 +36,7 @@ class CompanyRepository:
         company = await Company.get(company_id)
         if not company:
             return None
-        update_data["updated_at"] = int(time.time())
+        update_data["updated_at"] = int(time.time() * 1000)
         await company.update({"$set": update_data})
         return await Company.get(company_id)
 
