@@ -43,6 +43,10 @@ class UserService:
             nickname=data.nickname,
             avatar=data.avatar,
             role=data.role,
+            company_id=data.company_id,
+            department_id=data.department_id,
+            position_id=data.position_id,
+            role_ids=data.role_ids,
         )
         return await self.repo.create(user)
 

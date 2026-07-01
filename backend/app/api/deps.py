@@ -10,6 +10,7 @@ from app.core.security import decode_token
 from app.database.redis import get_redis
 from app.models.user import User
 from app.repositories.user_repository import UserRepository
+from app.services.permission_service import PermissionService
 
 security_scheme = HTTPBearer()
 
@@ -45,5 +46,8 @@ def require_role(required_role: str):
 
 def require_permission(key: str):
     async def checker(current_user: Annotated[User, Depends(get_current_user)]) -> User:
+        allowed = await PermissionService.get_user_permissions(current_user.role_ids)
+        if key not in allowed:
+            raise PermissionDeniedError()
         return current_user
     return checker

@@ -13,6 +13,10 @@ class User(Document):
     password_hash: str
     nickname: Optional[str] = None
     avatar: Optional[str] = None
+    company_id: Optional[UUID] = None
+    department_id: Optional[UUID] = None
+    position_id: Optional[UUID] = None
+    role_ids: list[UUID] = []
     role: str = "user"
     status: int = 1
     last_login_time: Optional[datetime] = None
