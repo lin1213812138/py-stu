@@ -30,7 +30,7 @@ class DepartmentRepository:
         dept = await Department.get(dept_id)
         if not dept:
             return None
-        update_data["updated_at"] = time.time() * 1000
+        update_data["updated_at"] = int(time.time())
         await dept.update({"$set": update_data})
         return await Department.get(dept_id)
 

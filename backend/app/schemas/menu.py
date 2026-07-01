@@ -55,7 +55,7 @@ class MenuResponse(BaseModel):
     remark: Optional[str] = None
     status: int
     children: list["MenuResponse"] = []
-    created_at: float
-    updated_at: float
+    created_at: int
+    updated_at: int
 
     model_config = {"from_attributes": True}

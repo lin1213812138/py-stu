@@ -58,7 +58,7 @@ class UserRepository:
         user = await User.get(user_id)
         if not user:
             return None
-        update_data["updated_at"] = time.time() * 1000
+        update_data["updated_at"] = int(time.time())
         await user.update({"$set": update_data})
         return await User.get(user_id)
 

@@ -27,7 +27,7 @@ class DepartmentResponse(BaseModel):
     status: int
     sort: int
     children: list["DepartmentResponse"] = []
-    created_at: float
-    updated_at: float
+    created_at: int
+    updated_at: int
 
     model_config = {"from_attributes": True}

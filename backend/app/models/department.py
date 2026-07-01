@@ -14,8 +14,8 @@ class Department(Document):
     leader_id: Optional[str] = None
     status: int = 1
     sort: int = 0
-    created_at: float = Field(default_factory=lambda: time.time() * 1000)
-    updated_at: float = Field(default_factory=lambda: time.time() * 1000)
+    created_at: int = Field(default_factory=lambda: int(time.time()))
+    updated_at: int = Field(default_factory=lambda: int(time.time()))
 
     class Settings:
         name = "departments"

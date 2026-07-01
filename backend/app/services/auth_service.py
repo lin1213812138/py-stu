@@ -43,7 +43,7 @@ class AuthService:
 
         await redis.set(f"refresh_token:{user.id}", refresh_token)
 
-        user.last_login_time = time.time() * 1000
+        user.last_login_time = int(time.time())
         await user.save()
 
         return TokenResponse(access_token=access_token, refresh_token=refresh_token)

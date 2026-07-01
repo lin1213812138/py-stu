@@ -19,9 +19,9 @@ class User(Document):
     role_ids: list[str] = []
     role: str = "user"
     status: int = 1
-    last_login_time: Optional[float] = None
-    created_at: float = Field(default_factory=lambda: time.time() * 1000)
-    updated_at: float = Field(default_factory=lambda: time.time() * 1000)
+    last_login_time: Optional[int] = None
+    created_at: int = Field(default_factory=lambda: int(time.time()))
+    updated_at: int = Field(default_factory=lambda: int(time.time()))
 
     class Settings:
         name = "users"

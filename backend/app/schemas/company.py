@@ -27,7 +27,7 @@ class CompanyResponse(BaseModel):
     contact: Optional[str] = None
     status: int
     sort: int
-    created_at: float
-    updated_at: float
+    created_at: int
+    updated_at: int
 
     model_config = {"from_attributes": True}

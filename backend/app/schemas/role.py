@@ -26,7 +26,7 @@ class RoleResponse(BaseModel):
     permissions: list[RolePermission] = []
     status: int
     remark: Optional[str] = None
-    created_at: float
-    updated_at: float
+    created_at: int
+    updated_at: int
 
     model_config = {"from_attributes": True}
