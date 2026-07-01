@@ -1,13 +1,13 @@
 from beanie import init_beanie
-from motor.motor_asyncio import AsyncIOMotorClient
 from loguru import logger
+from pymongo import AsyncMongoClient
 
 from app.core.config import settings
 
 
 async def init_db() -> None:
-    client = AsyncIOMotorClient(settings.MONGODB_URL)
-    db = client[settings.MONGODB_DATABASE]
+    client = AsyncMongoClient(settings.MONGODB_URL, serverSelectionTimeoutMS=3000)
+    db = client.get_database(settings.MONGODB_DATABASE)
     await init_beanie(
         database=db,
         document_models=[
