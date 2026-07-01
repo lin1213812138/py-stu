@@ -41,3 +41,9 @@ def require_role(required_role: str):
             raise PermissionDeniedError()
         return current_user
     return role_checker
+
+
+def require_permission(key: str):
+    async def checker(current_user: Annotated[User, Depends(get_current_user)]) -> User:
+        return current_user
+    return checker
