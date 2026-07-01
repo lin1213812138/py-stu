@@ -28,6 +28,20 @@ Router → Service → Repository → ODM (Beanie)
 - No print statements — use `loguru`
 - Imports order: stdlib → third-party → local (separated by blank line)
 
+### Data Model Conventions (MANDATORY)
+- **ID type**: All document `_id` fields use `str`, generated via `lambda: str(uuid4())`
+  ```python
+  id: str = Field(default_factory=lambda: str(uuid4()), alias="_id")
+  ```
+- **Foreign keys**: All reference IDs use `str` (e.g. `company_id: str`, `user_id: str`)
+- **Timestamps**: All time fields use `int` (millisecond Unix timestamp), generated via `int(time.time() * 1000)`
+  ```python
+  created_at: int = Field(default_factory=lambda: int(time.time() * 1000))
+  updated_at: int = Field(default_factory=lambda: int(time.time() * 1000))
+  ```
+- **Update timestamps**: Repositories MUST set `update_data["updated_at"] = int(time.time() * 1000)` on every update
+- **DO NOT** import or use `UUID` type or `datetime` type in models or schemas
+
 ### Response Format (ALL endpoints)
 ```json
 {"code": 0, "message": "success", "data": {}}
