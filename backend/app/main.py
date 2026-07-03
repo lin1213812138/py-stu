@@ -1,4 +1,4 @@
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager  # noqa: I001
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -48,3 +48,7 @@ app.add_exception_handler(AppException, global_exception_handler)
 app.add_exception_handler(Exception, global_exception_handler)
 
 app.include_router(v1_router)
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("app.main:app", host="0.0.0.0", port=settings.PORT, reload=True)

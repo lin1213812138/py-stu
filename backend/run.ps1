@@ -12,7 +12,12 @@ $PYTHON = ".venv\Scripts\python"
 switch ($Command) {
     "dev" {
         Write-Host "🚀 Starting dev server..." -ForegroundColor Cyan
-        & $PYTHON -m uvicorn app.main:app --reload @ExtraArgs
+        $port = "8000"
+        if (Test-Path ".env") {
+            $portLine = Get-Content ".env" | Select-String "^PORT=" | ForEach-Object { $_ -replace "^PORT=", "" }
+            if ($portLine) { $port = $portLine.Trim() }
+        }
+        & $PYTHON -m uvicorn app.main:app --reload --port $port @ExtraArgs
     }
     "test" {
         Write-Host "🧪 Running tests..." -ForegroundColor Cyan
