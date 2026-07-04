@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from fastapi.security import HTTPAuthorizationCredentials
 from redis.asyncio import Redis
 
@@ -17,14 +17,25 @@ service = AuthService()
 
 
 @router.post("/register")
-async def register(body: RegisterRequest) -> APIResponse:
-    user = await service.register(body.username, body.email, body.password)
+async def register(
+    body: RegisterRequest,
+    request: Request,
+) -> APIResponse:
+    ip = request.client.host if request.client else None
+    user_agent = request.headers.get("user-agent")
+    user = await service.register(body.username, body.email, body.password, ip, user_agent)
     return APIResponse(data=UserResponse.model_validate(user))
 
 
 @router.post("/login")
-async def login(body: LoginRequest, redis: Annotated[Redis, Depends(get_redis)]) -> APIResponse:
-    tokens = await service.login(body.username, body.password, redis)
+async def login(
+    body: LoginRequest,
+    redis: Annotated[Redis, Depends(get_redis)],
+    request: Request,
+) -> APIResponse:
+    ip = request.client.host if request.client else None
+    user_agent = request.headers.get("user-agent")
+    tokens = await service.login(body.username, body.password, redis, ip, user_agent)
     return APIResponse(data=tokens.model_dump())
 
 

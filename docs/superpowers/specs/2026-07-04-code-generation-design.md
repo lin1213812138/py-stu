@@ -30,13 +30,14 @@
 
 ### GenField（嵌入式 Pydantic BaseModel）
 
+MongoDB 无主键概念，`id`、`created_at`、`updated_at` 为系统字段，由模板自动生成，不出现在字段配置中。
+
 ```python
 class GenField(BaseModel):
     field_name: str              # 字段名 username
     field_type: str              # Python 类型 str | Optional[str] | int
     label: str = ""              # 中文名 "用户名"
-    is_pk: bool = False          # 是否主键
-    is_required: bool = False    # 是否必填
+    is_required: bool = False    # 是否必填（对应 Optional）
     is_list: bool = True         # 列表页显示
     is_query: bool = False       # 支持搜索
     is_form: bool = True         # 表单显示
@@ -69,10 +70,10 @@ class GenTemplate(Document):
 
 | 配置 | 影响 |
 |---|---|
-| `is_pk=True` | Model 中生成 `id: str = Field(default_factory=lambda: str(uuid4()), alias="_id")` |
 | `is_list=True` | Endpoint 列表响应包含此字段 |
-| `is_query=True` | Service 的 get_list 中添加过滤条件 `query_type` 控制 like / exact |
+| `is_query=True` | Service 的 get_list 中添加过滤条件，`query_type` 控制 like / exact |
 | `is_form=True` | Schema 的 Create/Update 中包含此字段 |
+| `is_required=True` | Schema 中字段为必填（不加 `Optional`） |
 
 ## 导入机制
 
@@ -87,7 +88,6 @@ for field_name, field_info in User.model_fields.items():
         field_name=field_name,
         field_type=str(field_info.annotation),
         is_required="Optional" not in str(field_info.annotation),
-        is_pk=(field_name == "id"),
     )
 ```
 
@@ -115,7 +115,7 @@ engine.py(template: GenTemplate)
   │
   ├── 1. build_context(template)
   │      ├── entity_name / entity_lower / table_name
-  │      ├── pk_fields / list_fields / query_fields / form_fields
+      │      ├── list_fields / query_fields / form_fields
   │      ├── 自动收集需要的 import
   │      └── permission_key: "system:{module}:{action}"
   │
@@ -141,7 +141,7 @@ from pydantic import Field
 
 class {{ entity_name }}(Document):
     id: str = Field(default_factory=lambda: str(uuid4()), alias="_id")
-{% for f in fields if not f.is_pk %}
+{% for f in fields %}
     {{ f.field_name }}: {{ f.field_type }}
 {% endfor %}
     created_at: int = Field(default_factory=lambda: int(time.time() * 1000))
@@ -244,7 +244,7 @@ system:gen:generate
 | 场景 | 处理方式 |
 |---|---|
 | entity_name 不合法 | 返回 400，提示名称格式 |
-| 字段列表为空 | 返回 400，提示至少需要一个非 pk 字段 |
+| 字段列表为空 | 返回 400，提示至少需要一个字段 |
 | 模板不存在 | 返回 GenTemplateNotFoundError(10016) |
 | Jinja2 渲染错误 | 返回具体模板文件名 + 行号 |
 | 文件写入失败 | 返回具体错误（权限/磁盘） |
@@ -268,7 +268,7 @@ system:gen:generate
 - **实体名冲突**：生成记录中提示已存在文件，可手动改名
 - **代码正确性**：生成器不负责验证，需开发者运行 `ruff` 检查
 - **created_at/updated_at**：系统字段自动排除，由模板统一生成
-- **`xxx_id` 字段**：自动标记为外键引用，label 设为 "xxx"
+- **`xxx_id` 字段**：`label` 自动设为 "xxxID"，作为普通 str 字段处理
 
 ## 测试策略
 

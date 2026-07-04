@@ -17,6 +17,7 @@ async def init_db() -> None:
             "app.models.position.Position",
             "app.models.menu.Menu",
             "app.models.role.Role",
+            "app.models.login_log.LoginLog",
         ],
     )
     logger.info(f"MongoDB connected: {settings.MONGODB_URL}/{settings.MONGODB_DATABASE}")

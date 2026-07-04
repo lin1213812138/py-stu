@@ -1,4 +1,5 @@
 import time
+from typing import Optional
 
 from redis.asyncio import Redis
 
@@ -15,14 +16,23 @@ from app.models.user import User
 from app.repositories.user_repository import UserRepository
 from app.schemas.auth import LoginResponse, TokenResponse
 from app.schemas.user import UserResponse
+from app.services.login_log_service import LoginLogService
 
 
 class AuthService:
 
     def __init__(self):
         self.repo = UserRepository()
+        self.log_service = LoginLogService()
 
-    async def register(self, username: str, email: str, password: str) -> User:
+    async def register(
+        self,
+        username: str,
+        email: str,
+        password: str,
+        ip: Optional[str] = None,
+        user_agent: Optional[str] = None,
+    ) -> User:
         existing = await self.repo.get_by_username(username)
         if existing:
             raise UserExistsError()
@@ -35,15 +45,44 @@ class AuthService:
             email=email,
             password_hash=hash_password(password),
         )
-        return await self.repo.create(user)
+        user = await self.repo.create(user)
 
-    async def login(self, username: str, password: str, redis: Redis) -> LoginResponse:
+        await self.log_service.record_login(
+            user_id=user.id,
+            username=username,
+            ip=ip,
+            user_agent=user_agent,
+            status=1,
+        )
+
+        return user
+
+    async def login(
+        self,
+        username: str,
+        password: str,
+        redis: Redis,
+        ip: Optional[str] = None,
+        user_agent: Optional[str] = None,
+    ) -> LoginResponse:
         user = await self.repo.get_by_username(username)
         if not user:
+            await self.log_service.record_login(
+                user_id="", username=username, ip=ip, user_agent=user_agent,
+                status=0, fail_reason="用户不存在",
+            )
             raise InvalidCredentialsError()
         if not verify_password(password, user.password_hash):
+            await self.log_service.record_login(
+                user_id=user.id, username=username, ip=ip, user_agent=user_agent,
+                status=0, fail_reason="密码错误",
+            )
             raise InvalidCredentialsError()
         if user.status == 0:
+            await self.log_service.record_login(
+                user_id=user.id, username=username, ip=ip, user_agent=user_agent,
+                status=0, fail_reason="账号已禁用",
+            )
             raise InvalidCredentialsError()
 
         access_token = create_access_token(user.id, user.username, user.role)
@@ -53,6 +92,10 @@ class AuthService:
 
         user.last_login_time = int(time.time() * 1000)
         await user.save()
+
+        await self.log_service.record_login(
+            user_id=user.id, username=username, ip=ip, user_agent=user_agent, status=1,
+        )
 
         return LoginResponse(
             access_token=access_token,
