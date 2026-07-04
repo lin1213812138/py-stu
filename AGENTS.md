@@ -28,6 +28,12 @@ Router → Service → Repository → ODM (Beanie)
 - 禁止 `print` — 使用 `loguru`
 - 导入顺序：标准库 → 第三方 → 本地（空行分隔）
 
+### Git 提交规范
+- **提交信息必须使用中文**，包括 AI agent 自动生成的提交
+- 格式：`<类型>: <简要描述>`
+- 类型示例：`feat`（新功能）、`fix`（修复）、`refactor`（重构）、`docs`（文档）、`test`（测试）、`chore`（杂项）
+- 描述应简洁说明改了什么、为什么改
+
 ### 数据模型规范（必须遵守）
 - **ID 类型**：所有文档 `_id` 字段使用 `str`，通过 `lambda: str(uuid4())` 生成
   ```python

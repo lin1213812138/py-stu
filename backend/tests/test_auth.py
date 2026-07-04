@@ -30,3 +30,5 @@ async def test_login(async_client: AsyncClient):
     data = resp.json()
     assert data["code"] == 0
     assert "access_token" in data["data"]
+    assert "user" in data["data"]
+    assert data["data"]["user"]["username"] == "loginuser"

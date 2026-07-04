@@ -13,7 +13,8 @@ from app.core.security import (
 )
 from app.models.user import User
 from app.repositories.user_repository import UserRepository
-from app.schemas.auth import TokenResponse
+from app.schemas.auth import LoginResponse, TokenResponse
+from app.schemas.user import UserResponse
 
 
 class AuthService:
@@ -36,7 +37,7 @@ class AuthService:
         )
         return await self.repo.create(user)
 
-    async def login(self, username: str, password: str, redis: Redis) -> TokenResponse:
+    async def login(self, username: str, password: str, redis: Redis) -> LoginResponse:
         user = await self.repo.get_by_username(username)
         if not user:
             raise InvalidCredentialsError()
@@ -53,7 +54,11 @@ class AuthService:
         user.last_login_time = int(time.time() * 1000)
         await user.save()
 
-        return TokenResponse(access_token=access_token, refresh_token=refresh_token)
+        return LoginResponse(
+            access_token=access_token,
+            refresh_token=refresh_token,
+            user=UserResponse.model_validate(user),
+        )
 
     async def logout(self, user_id: str, access_token: str, redis: Redis) -> None:
         await redis.delete(f"refresh_token:{user_id}")
