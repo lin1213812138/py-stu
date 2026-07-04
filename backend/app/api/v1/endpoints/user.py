@@ -69,4 +69,4 @@ async def delete_user(
     current_user: Annotated[User, Depends(require_role("admin"))],
 ) -> APIResponse:
     await service.delete_user(user_id)
-    return APIResponse(message="User deleted")
+    return APIResponse(message="删除成功")

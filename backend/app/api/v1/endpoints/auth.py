@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 from fastapi.security import HTTPAuthorizationCredentials
 from redis.asyncio import Redis
 
-from app.api.deps import get_current_user, security_scheme
+from app.api.deps import get_current_user, require_permission, security_scheme
 from app.database.redis import get_redis
 from app.models.user import User
 from app.schemas.auth import LoginRequest, RefreshRequest, RegisterRequest
@@ -35,7 +35,16 @@ async def logout(
     redis: Annotated[Redis, Depends(get_redis)],
 ) -> APIResponse:
     await service.logout(current_user.id, credentials.credentials, redis)
-    return APIResponse(message="logout success")
+    return APIResponse(message="退出成功")
+
+
+@router.get("/online")
+async def get_online_users(
+    current_user: Annotated[User, Depends(require_permission("system:user:list"))],
+    redis: Annotated[Redis, Depends(get_redis)],
+) -> APIResponse:
+    users = await service.get_online_users(redis)
+    return APIResponse(data=users)
 
 
 @router.post("/refresh")

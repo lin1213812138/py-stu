@@ -15,7 +15,7 @@ class PositionService:
     async def get_by_id(self, pos_id: str) -> Position:
         pos = await self.repo.get_by_id(pos_id)
         if not pos:
-            raise AppException(code=10010, message="Position not found")
+            raise AppException(code=10010, message="岗位不存在")
         return pos
 
     async def create(self, data: PositionCreate) -> Position:
@@ -25,10 +25,10 @@ class PositionService:
     async def update(self, pos_id: str, data: PositionUpdate) -> Position:
         pos = await self.repo.update(pos_id, data.model_dump(exclude_unset=True))
         if not pos:
-            raise AppException(code=10010, message="Position not found")
+            raise AppException(code=10010, message="岗位不存在")
         return pos
 
     async def delete(self, pos_id: str) -> None:
         deleted = await self.repo.delete(pos_id)
         if not deleted:
-            raise AppException(code=10010, message="Position not found")
+            raise AppException(code=10010, message="岗位不存在")

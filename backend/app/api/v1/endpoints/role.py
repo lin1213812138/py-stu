@@ -67,4 +67,4 @@ async def delete_role(
     current_user: Annotated[User, Depends(require_permission("system:role:delete"))],
 ) -> APIResponse:
     await service.delete(role_id)
-    return APIResponse(message="Role deleted")
+    return APIResponse(message="删除成功")

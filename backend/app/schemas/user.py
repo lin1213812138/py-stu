@@ -6,10 +6,10 @@ class UserCreate(BaseModel):
     username: str
     email: EmailStr
     password: str
-    nickname: Optional[str] = None
-    avatar: Optional[str] = None
+    nickname: str | None = None
+    avatar: str | None = None
     role: str = "user"
-    company_id: Optional[str] = None
+    company_id: str | None = None
     department_id: Optional[str] = None
     position_id: Optional[str] = None
     role_ids: list[str] = []

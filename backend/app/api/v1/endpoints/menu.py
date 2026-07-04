@@ -59,4 +59,4 @@ async def delete_menu(
     current_user: Annotated[User, Depends(require_permission("system:menu:delete"))],
 ) -> APIResponse:
     await service.delete(menu_id)
-    return APIResponse(message="Menu deleted")
+    return APIResponse(message="删除成功")

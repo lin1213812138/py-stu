@@ -71,5 +71,9 @@ class UserRepository:
         return True
 
     @staticmethod
+    async def get_by_ids(user_ids: list[str]) -> list[User]:
+        return await User.find({"_id": {"$in": user_ids}}).to_list()
+
+    @staticmethod
     async def count(filters: Optional[dict] = None) -> int:
         return await User.find(filters or {}).count()

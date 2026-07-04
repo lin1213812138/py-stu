@@ -64,6 +64,22 @@ class AuthService:
         await redis.delete(f"refresh_token:{user_id}")
         await redis.setex(f"blacklist:{access_token}", settings.JWT_ACCESS_EXPIRE, "1")
 
+    async def get_online_users(self, redis: Redis) -> list[UserResponse]:
+        cursor = 0
+        user_ids: list[str] = []
+        while True:
+            cursor, keys = await redis.scan(cursor, match="refresh_token:*", count=1000)
+            user_ids.extend(key.split(":", 1)[1] for key in keys)
+            if cursor == 0:
+                break
+
+        if not user_ids:
+            return []
+
+        users = await self.repo.get_by_ids(user_ids)
+        users.sort(key=lambda u: u.last_login_time or 0, reverse=True)
+        return [UserResponse.model_validate(u) for u in users]
+
     async def refresh_token(self, refresh_token: str, redis: Redis) -> TokenResponse:
         try:
             payload = decode_token(refresh_token)

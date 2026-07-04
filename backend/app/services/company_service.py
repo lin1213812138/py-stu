@@ -19,23 +19,23 @@ class CompanyService:
     async def get_by_id(self, company_id: str) -> Company:
         company = await self.repo.get_by_id(company_id)
         if not company:
-            raise AppException(code=10008, message="Company not found")
+            raise AppException(code=10008, message="公司不存在")
         return company
 
     async def create(self, data: CompanyCreate) -> Company:
         existing = await self.repo.get_by_name(data.name)
         if existing:
-            raise AppException(code=10015, message="Duplicate company name")
+            raise AppException(code=10015, message="公司名称已存在")
         company = Company(**data.model_dump())
         return await self.repo.create(company)
 
     async def update(self, company_id: str, data: CompanyUpdate) -> Company:
         company = await self.repo.update(company_id, data.model_dump(exclude_unset=True))
         if not company:
-            raise AppException(code=10008, message="Company not found")
+            raise AppException(code=10008, message="公司不存在")
         return company
 
     async def delete(self, company_id: str) -> None:
         deleted = await self.repo.delete(company_id)
         if not deleted:
-            raise AppException(code=10008, message="Company not found")
+            raise AppException(code=10008, message="公司不存在")

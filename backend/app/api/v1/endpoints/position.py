@@ -54,4 +54,4 @@ async def delete_position(
     current_user: Annotated[User, Depends(require_permission("system:position:delete"))],
 ) -> APIResponse:
     await service.delete(pos_id)
-    return APIResponse(message="Position deleted")
+    return APIResponse(message="删除成功")

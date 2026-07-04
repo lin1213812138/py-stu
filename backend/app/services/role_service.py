@@ -19,13 +19,13 @@ class RoleService:
     async def get_by_id(self, role_id: str) -> Role:
         role = await self.repo.get_by_id(role_id)
         if not role:
-            raise AppException(code=10012, message="Role not found")
+            raise AppException(code=10012, message="角色不存在")
         return role
 
     async def create(self, data: RoleCreate) -> Role:
         existing = await self.repo.get_by_code(data.code)
         if existing:
-            raise AppException(code=10014, message="Duplicate role code")
+            raise AppException(code=10014, message="角色编码已存在")
         role = Role(**data.model_dump())
         return await self.repo.create(role)
 
@@ -34,13 +34,13 @@ class RoleService:
         if "code" in update_dict:
             existing = await self.repo.get_by_code(update_dict["code"])
             if existing and existing.id != role_id:
-                raise AppException(code=10014, message="Duplicate role code")
+                raise AppException(code=10014, message="角色编码已存在")
         role = await self.repo.update(role_id, update_dict)
         if not role:
-            raise AppException(code=10012, message="Role not found")
+            raise AppException(code=10012, message="角色不存在")
         return role
 
     async def delete(self, role_id: str) -> None:
         deleted = await self.repo.delete(role_id)
         if not deleted:
-            raise AppException(code=10012, message="Role not found")
+            raise AppException(code=10012, message="角色不存在")

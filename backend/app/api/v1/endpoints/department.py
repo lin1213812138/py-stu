@@ -54,4 +54,4 @@ async def delete_department(
     current_user: Annotated[User, Depends(require_permission("system:dept:delete"))],
 ) -> APIResponse:
     await service.delete(dept_id)
-    return APIResponse(message="Department deleted")
+    return APIResponse(message="删除成功")

@@ -67,4 +67,4 @@ async def delete_company(
     current_user: Annotated[User, Depends(require_permission("system:company:delete"))],
 ) -> APIResponse:
     await service.delete(company_id)
-    return APIResponse(message="Company deleted")
+    return APIResponse(message="删除成功")

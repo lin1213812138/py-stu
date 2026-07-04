@@ -28,7 +28,7 @@ class DepartmentService:
     async def get_by_id(self, dept_id: str) -> Department:
         dept = await self.repo.get_by_id(dept_id)
         if not dept:
-            raise AppException(code=10009, message="Department not found")
+            raise AppException(code=10009, message="部门不存在")
         return dept
 
     async def create(self, data: DepartmentCreate) -> Department:
@@ -38,13 +38,13 @@ class DepartmentService:
     async def update(self, dept_id: str, data: DepartmentUpdate) -> Department:
         dept = await self.repo.update(dept_id, data.model_dump(exclude_unset=True))
         if not dept:
-            raise AppException(code=10009, message="Department not found")
+            raise AppException(code=10009, message="部门不存在")
         return dept
 
     async def delete(self, dept_id: str) -> None:
         children = await self.repo.get_children(dept_id)
         if children:
-            raise AppException(code=10013, message="Department has children, cannot delete")
+            raise AppException(code=10013, message="部门存在子级，无法删除")
         deleted = await self.repo.delete(dept_id)
         if not deleted:
-            raise AppException(code=10009, message="Department not found")
+            raise AppException(code=10009, message="部门不存在")

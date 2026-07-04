@@ -38,7 +38,7 @@ class MenuService:
     async def get_by_id(self, menu_id: str) -> Menu:
         menu = await self.repo.get_by_id(menu_id)
         if not menu:
-            raise AppException(code=10011, message="Menu not found")
+            raise AppException(code=10011, message="菜单不存在")
         return menu
 
     async def create(self, data: MenuCreate) -> Menu:
@@ -48,10 +48,10 @@ class MenuService:
     async def update(self, menu_id: str, data: MenuUpdate) -> Menu:
         menu = await self.repo.update(menu_id, data.model_dump(exclude_unset=True))
         if not menu:
-            raise AppException(code=10011, message="Menu not found")
+            raise AppException(code=10011, message="菜单不存在")
         return menu
 
     async def delete(self, menu_id: str) -> None:
         deleted = await self.repo.delete(menu_id)
         if not deleted:
-            raise AppException(code=10011, message="Menu not found")
+            raise AppException(code=10011, message="菜单不存在")
