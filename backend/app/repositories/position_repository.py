@@ -1,5 +1,6 @@
 import time
 from typing import Optional
+
 from app.models.position import Position
 
 

@@ -1,5 +1,6 @@
 import time
 from typing import Optional
+
 from app.models.company import Company
 from app.utils.pagination import PageParams, PageResult
 
