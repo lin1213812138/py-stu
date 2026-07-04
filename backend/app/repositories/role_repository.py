@@ -41,7 +41,7 @@ class RoleRepository:
         role = await Role.get(role_id)
         if not role:
             return None
-        update_data["updated_at"] = int(time.time() * 1000)
+        update_data["updated_at"] = time.time() * 1000
         await role.update({"$set": update_data})
         return await Role.get(role_id)
 

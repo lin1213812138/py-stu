@@ -13,9 +13,9 @@ class LoginLog(Document):
     ip: Optional[str] = None
     user_agent: Optional[str] = None
     status: int = 1  # 1=成功, 0=失败
-    fail_reason: Optional[str] = None
-    login_time: int = Field(default_factory=lambda: int(time.time() * 1000))
-    created_at: int = Field(default_factory=lambda: int(time.time() * 1000))
+    message: str = ""
+    login_time: float = Field(default_factory=lambda: time.time() * 1000)
+    created_at: float = Field(default_factory=lambda: time.time() * 1000)
 
     class Settings:
         name = "login_logs"

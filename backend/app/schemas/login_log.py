@@ -10,8 +10,8 @@ class LoginLogResponse(BaseModel):
     ip: Optional[str] = None
     user_agent: Optional[str] = None
     status: int
-    fail_reason: Optional[str] = None
-    login_time: int
-    created_at: int
+    message: str = ""
+    login_time: float
+    created_at: float
 
     model_config = {"from_attributes": True}

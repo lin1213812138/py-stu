@@ -20,7 +20,7 @@ class PositionResponse(BaseModel):
     department_id: str
     status: int
     sort: int
-    created_at: int
-    updated_at: int
+    created_at: float
+    updated_at: float
 
     model_config = {"from_attributes": True}

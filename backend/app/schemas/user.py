@@ -35,12 +35,12 @@ class UserResponse(BaseModel):
     avatar: Optional[str] = None
     role: str
     status: int
-    last_login_time: Optional[int] = None
+    last_login_time: Optional[float] = None
     company_id: Optional[str] = None
     department_id: Optional[str] = None
     position_id: Optional[str] = None
     role_ids: list[str] = []
-    created_at: int
-    updated_at: int
+    created_at: float
+    updated_at: float
 
     model_config = {"from_attributes": True}

@@ -53,6 +53,7 @@ class AuthService:
             ip=ip,
             user_agent=user_agent,
             status=1,
+            message="注册成功",
         )
 
         return user
@@ -69,19 +70,19 @@ class AuthService:
         if not user:
             await self.log_service.record_login(
                 user_id="", username=username, ip=ip, user_agent=user_agent,
-                status=0, fail_reason="用户不存在",
+                status=0, message="用户不存在",
             )
             raise InvalidCredentialsError()
         if not verify_password(password, user.password_hash):
             await self.log_service.record_login(
                 user_id=user.id, username=username, ip=ip, user_agent=user_agent,
-                status=0, fail_reason="密码错误",
+                status=0, message="密码错误",
             )
             raise InvalidCredentialsError()
         if user.status == 0:
             await self.log_service.record_login(
                 user_id=user.id, username=username, ip=ip, user_agent=user_agent,
-                status=0, fail_reason="账号已禁用",
+                status=0, message="账号已禁用",
             )
             raise InvalidCredentialsError()
 
@@ -90,11 +91,12 @@ class AuthService:
 
         await redis.set(f"refresh_token:{user.id}", refresh_token)
 
-        user.last_login_time = int(time.time() * 1000)
+        user.last_login_time = time.time() * 1000
         await user.save()
 
         await self.log_service.record_login(
-            user_id=user.id, username=username, ip=ip, user_agent=user_agent, status=1,
+            user_id=user.id, username=username, ip=ip, user_agent=user_agent,
+            status=1, message="登录成功",
         )
 
         return LoginResponse(

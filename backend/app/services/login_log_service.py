@@ -18,7 +18,7 @@ class LoginLogService:
         ip: Optional[str] = None,
         user_agent: Optional[str] = None,
         status: int = 1,
-        fail_reason: Optional[str] = None,
+        message: str = "",
     ) -> None:
         log = LoginLog(
             user_id=user_id,
@@ -26,7 +26,7 @@ class LoginLogService:
             ip=ip,
             user_agent=user_agent,
             status=status,
-            fail_reason=fail_reason,
+            message=message,
         )
         await self.repo.create(log)
 
@@ -37,5 +37,6 @@ class LoginLogService:
         status: Optional[int] = None,
     ) -> PageResult:
         result = await self.repo.get_list(params, username, status)
-        result.items = [LoginLogResponse.model_validate(item) for item in result.items]
+        items = [LoginLogResponse.model_validate(item) for item in result.items]
+        result.items = items
         return result
